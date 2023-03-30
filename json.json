@@ -1,8 +1,10 @@
 {
   "config": {
-    "user-agents": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"]
+    "user-agents": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"],
+    "condis": "Content-Disposition: form-data; filename={payload_file_name}",
+    "print-request-success": "f'Status Code: {self.request.status_code}'"
   },
-  "ext": {
+  "exts": {
   "php":[".php", ".php2", ".php3", ".php4", ".php5", ".php6", ".php7", ".phps", ".phps", ".pht", ".phtm", ".phtml", ".pgif", ".shtml", ".htaccess", ".phar", ".inc", ".hphp", ".ctp", ".module", ".pHp", ".PhP2", ".PhP3",",.PhP4", ".PhP5", ".PhP6", ".PhP7", ".PhPs", ".PhPs", ".pHt", ".pHtm", ".pHtMl", ".pGiF", ".sHtMl", ".hTacCess", ".pHar", ".iNc", ".hPhp", ".cTp", ".mOdUle"],
   "asp": [".asp", ".aspx", ".config", ".ashx", ".asmx", ".aspq", ".axd", ".cshtm", ".cshtml", ".rem", ".soap", ".vbhtm", ".vbhtml", ".asa", ".cer", ".shtml", ".aSp", ".aSpX", ".cOnFig", ".aShx", ".aSmX", ".aSpq", ".aXd", ".csHtm", ".cShtMl", ".rEm", ".soAp", ".vbHtm", ".vbHtMl", ".aSa", ".cEr", ".shTml"],
   "jsp": [".jsp", ".jspx", ".jsw", ".jsv", ".jspf", ".wss", ".do", ".action", ".jSp", ".jSpX", ".jSw", ".jSv", ".jsPf", ".wSs", ".dO", ".aCtiOn"],

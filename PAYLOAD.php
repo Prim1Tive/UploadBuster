@@ -1,1 +1,1 @@
-<?php print("Hello World")?>
+<?php echo 'lolz';?>

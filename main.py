@@ -2,6 +2,7 @@ from random import randint
 import requests
 import json
 import argparse
+import exiftool
 from time import sleep
 
 
@@ -108,8 +109,16 @@ class UploadBuster:
         if not _random_flag:
             self._content_type = self.temp_content_type_bank[1]
 
-    def _tech_magic_bytes(self):
+    def _tech_magic_bytes(self): # change or add magic bytes in the beginning of the file.
         pass
+
+    def _tech_add_header_exfitool(self):
+        _filename = bytes(self.payload_file_name)
+        with exiftool.ExifTool() as et:
+            et.execute(self._test_payload, _filename)
+
+
+
 
     # back
 
@@ -118,6 +127,7 @@ class UploadBuster:
             if self.success_message.lower() in _line.lower():
                 self.success_message_line = _line.strip()
                 self._success_counter += 1
+                self._success_flag = True
                 return True
         else:
             return False
@@ -126,7 +136,10 @@ class UploadBuster:
         self.ext_len = len(self.args.payload.split(".")[-1]) + 1
 
     def _add_submit_button(self):
-        self.submit = eval(self.args.data)
+        try:
+            self.submit = eval(self.args.data)
+        except TypeError:
+            print("[!] No submit button was added. adding a generic one corosponding to {'submit':'submit'}")
 
     def _refresh_format(self, _original=False):
         if _original:
@@ -134,7 +147,6 @@ class UploadBuster:
             self.p2 = self.allowed_exts[0]
         self.payload.update({self.args.upload_variable: (
         self.p1 + "." + self.p2, open(self.payload_file_name, 'rb').read(), 'multipart/form-data')})
-        self._add_submit_button()
 
         if "." not in self.payload[self.args.upload_variable][0]:  # no dot (.) in file name i.e payloadjpg
             _temp_list = list(self.payload[self.args.upload_variable])
@@ -236,6 +248,7 @@ class UploadBuster:
             self._tech_content_type()
             self._tech_content_type()
             self._tech_rand_user_agent()
+            self._add_submit_button()
 
         main_init()
 
@@ -244,6 +257,11 @@ class UploadBuster:
             self.brut_double_ext()
             self.brut_content_type()
             self._brut_brake_filename_limit()
+            self._tech_add_header_exfitool()
+
+
+            if self._success_flag is True:
+                print("[+] Success message not found with the following payload.")
         except KeyboardInterrupt:
             print('Exiting...', '\nsuccess: ', self._success_counter)
 

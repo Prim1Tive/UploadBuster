@@ -3,13 +3,22 @@ import requests
 import json
 import argparse
 import uuid
-
 from time import sleep
 
+___banner = '''
+
+   __  __      __                __/___      
+  / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
+ / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
+/ /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /    
+\____/ .___/_/\____/\__,_/\__,_/_____/\__,_/____/\__/\___/_/     
+    /_/                                                          
+
+'''
 
 def args_handler():
     parser = argparse.ArgumentParser(prog="UploadBuster", formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description="UploadBuster Was created to help BugBounty Hunters to easily locate vulnerable upload scripts in websites. ",
+                                     description=f'''{___banner}UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities. ''',
                                      epilog="legal disclaimer: \nUsage of UploadBuster for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.")
 
     # values
@@ -237,4 +246,5 @@ class UploadBuster:
 
 
 if __name__ == '__main__':
+    print(___banner)
     UploadBuster().main()

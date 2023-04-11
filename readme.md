@@ -66,9 +66,24 @@ r any misuse or damage caused by this program.
 -b = backend
 -e = allowed extensions
 -a = all tests
--v = verbos
+-v = Verbose
 -i = requests per-second
 -p = payload file name
 -s = success string
 -uv = file variable of the html page.
+```
+
+## Verbose message:
+```
+[+] Success message found!
+> Payload:                                                                                                                                          
+        > URL: http://localhost/upload1/index.php                                                                                              
+        + ~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                                
+        > HEADERS: {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'}
+        + ~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                                
+        > FILE: {'fileToUpload': ('fd09b.phtml', b'<?php echo HelloWorld;?>', '')}                                                                  
+        + ~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                                
+        > DATA: {'submit': 'Upload'}
+        + ~~~~~~~~~~~~~~~~~~~~~~~~~~
+        > SUCCESS LINE: <p class="alert-success">the file has been uploaded here: <a href="uploads/fd09b.phtml">uploads/fd09b.phtml</a>.</p>    <script type="text/javascript" src="../static/css/bootstrap.min.js"></script>
 ```

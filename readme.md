@@ -9,6 +9,7 @@ UploadBuster Was created by Michael Azoulay to help Security Researchers locate 
 
 ## Installation:
 - $ pip install requests
+- $ git clone https://github.com/Prim1Tive/UploadBuster.git
 
 ## Usage:
 ```

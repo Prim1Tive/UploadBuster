@@ -5,11 +5,12 @@
     "print-request-success": "f'Status Code: {self.request.status_code}'"
   },
   "exts": {
-  "php":[".php", ".php2", ".php3", ".php4", ".php5", ".php6", ".php7", ".phps", ".phps", ".pht", ".phtm", ".phtml", ".pgif", ".shtml", ".htaccess", ".phar", ".inc", ".hphp", ".ctp", ".module", ".pHp", ".PhP2", ".PhP3",".PhP4", ".PhP5", ".PhP6", ".PhP7", ".PhPs", ".PhPs", ".pHt", ".pHtm", ".pHtMl", ".pGiF", ".sHtMl", ".hTacCess", ".pHar", ".iNc", ".hPhp", ".cTp", ".mOdUle"],
-  "asp": [".asp", ".aspx", ".config", ".ashx", ".asmx", ".aspq", ".axd", ".cshtm", ".cshtml", ".rem", ".soap", ".vbhtm", ".vbhtml", ".asa", ".cer", ".shtml", ".aSp", ".aSpX", ".cOnFig", ".aShx", ".aSmX", ".aSpq", ".aXd", ".csHtm", ".cShtMl", ".rEm", ".soAp", ".vbHtm", ".vbHtMl", ".aSa", ".cEr", ".shTml"],
-  "jsp": [".jsp", ".jspx", ".jsw", ".jsv", ".jspf", ".wss", ".do", ".action", ".jSp", ".jSpX", ".jSw", ".jSv", ".jsPf", ".wSs", ".dO", ".aCtiOn"],
-  "perl": [".pl", ".cgi", ".pL", ".cGi"],
-  "null": ["%20", "%0a", "%00", "%0d%0a", "/", ".\\", ".", "...."]
+  "php":[".phtml", ".php", ".php3", ".php4", ".php5", ".inc"],
+  "asp": ["asp", ".aspx"],
+  "jsp": [".jsp", ".jspx", ".jsw", ".jsv", ".jspf"],
+  "perl": [".pl", ".pm", ".cgi", ".lib"],
+  "coldfusion": [".cfm", ".cfml", ".cfc", ".dbm"],
+  "null": [".%20", ".%0a", ".%00", ".%0d%0a", "./", "..\\", "..", "....."]
   },
   "magic_bytes": {
     "jpg": ["\\xff\\xd8\\xff","\\x00\\x00\\x00\\x0C","\\xFF\\x4F\\xFF\\x51"],

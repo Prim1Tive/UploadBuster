@@ -13,7 +13,7 @@ UploadBuster Was created by Michael Azoulay to help Security Researchers locate 
 
 ## Usage:
 ```
-usage: UploadBuster [-h] -u URL -b BACKEND -e EXTENSIONS [-a] [-p PAYLOAD] [-s SUCCESS_MESSAGE] [-d DATA] [-uv UPLOAD_VARIABLE] [-c HEADERS] [-i INTERVALS] [-to REQUEST_TIME_OUT] [-re] [-be] [-bn] [-bc]
+usage: python3 UploadBuster.py [-h] -u URL -b BACKEND -e EXTENSIONS [-a] [-p PAYLOAD] [-s SUCCESS_MESSAGE] [-d DATA] [-uv UPLOAD_VARIABLE] [-c HEADERS] [-i INTERVALS] [-to REQUEST_TIME_OUT] [-re] [-be] [-bn] [-bc]
                     [-de BRUTEFORCE_MULTI_EXTENSION] [-bl] [-db] [-vi] [-vo] [-v] [-vs]
                     
   -h, --help            show this help message and exit

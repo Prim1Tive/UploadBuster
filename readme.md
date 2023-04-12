@@ -1,4 +1,4 @@
-# asdasdUploadBuster - Bust upload file restrictions.
+# UploadBuster - Bust upload file restrictions.
 
 UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities.
 

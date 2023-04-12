@@ -64,6 +64,15 @@ r any misuse or damage caused by this program.
 ## Example:
 ```
  python3 UploadBuster.py -u http://localhost:9001/upload1/index.php -b php -e jpeg -uv fileToUpload -d submit,Upload -s "The file has been uploaded here" -a -v -i 1 -p payload.php
+
+-b = backend
+-e = allowed extensions
+-a = all tests
+-v = Verbose
+-i = requests per-second
+-p = payload file name
+-s = success string
+-uv = file variable of the html page.
 ```
 
 ## Verbose message:

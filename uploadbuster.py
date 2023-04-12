@@ -19,7 +19,7 @@ ___banner = '''
 
 def args_handler():
     parser = argparse.ArgumentParser(prog="UploadBuster", formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=f'''UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities. ''',
+                                     description=f'''UploadBuster Was created to help Security Researchers locate unrestricted file upload vulnerabilities. Prim1Tive™ ''',
                                      epilog="legal disclaimer: \nUsage of UploadBuster for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.")
 
     # values

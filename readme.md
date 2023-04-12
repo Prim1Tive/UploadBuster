@@ -1,7 +1,6 @@
 # UploadBuster - Bust upload file restrictions.
 
-UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities.
-
+UploadBuster Was created to help Security Researchers locate unrestricted file upload vulnerabilities. Prim1Tive™
 
 ## Requierments:
 
@@ -23,7 +22,7 @@ UploadBuster Was created by Michael Azoulay to help Security Researchers locate 
 
 usage: UploadBuster [-h] -u  -b  -e  [-a] [-p] [-s] [-d] [-uv] [-c] [-i] [-to] [-re] [-be] [-bn] [-bc] [-bm] [-bl] [-te] [-db] [-vi] [-vo] [-v] [-vs]
 
-UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities.
+UploadBuster Was created to help Security Researchers locate unrestricted file upload vulnerabilities. Prim1Tive™
 
 options:
   -h, --help            show this help message and exit

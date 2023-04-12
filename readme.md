@@ -26,15 +26,15 @@ UploadBuster Was created to help Security Researchers locate unrestricted file u
 
 options:
   -h, --help            	show this help message and exit
-  -u , --url            	Full url to the upload script [http://example.local/upload.php]
-  -b , --backend        	The backend language of the website [php,jsp,asp]
-  -e , --extensions     	Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]
-  -p , --payload		Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>
-  -s , --success-message	The success string of the upload script. [Upload was successful! uploads/image.jpg]
-  -d , --data Add custom	data to the request [name,key]
-  -uv , --upload-variable	main page upload php form variable (i.e form-data; name:###
-  -c , --headers Add		custom headers to the request
-  -i , --intervals		Add a delay between requests.
+  -u, --url            		Full url to the upload script [http://example.local/upload.php]
+  -b, --backend        		The backend language of the website [php,jsp,asp]
+  -e, --extensions     		Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]
+  -p, --payload			Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>
+  -s, --success-message		The success string of the upload script. [Upload was successful! uploads/image.jpg]
+  -d, --data Add custom		data to the request [name,key]
+  -c, --headers Add		custom headers to the request
+  -i, --intervals		Add a delay between requests.
+  -uv, --upload-variable	main page upload php form variable (i.e form-data; name:###
   -to , --request-time-out	Add a delay between requests.
   -re, --request-redirects 	Request Redirects flag.
   -db, --dont-brute		if success message is found stop all tests.

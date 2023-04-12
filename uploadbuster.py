@@ -48,7 +48,7 @@ def args_handler():
     parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
     parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ',
                         action='store_true')
-    parser.add_argument("-de", "--bruteforce-multi-extension", default=0, type=int,
+    parser.add_argument("-bm", "--bruteforce-multi-extension", default=0, type=int,
                         help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php) ', )
     parser.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ',
                         action='store_true')

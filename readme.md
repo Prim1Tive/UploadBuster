@@ -29,13 +29,26 @@ options:
   -u , --url            Full url to the upload script [http://example.local/upload.php]
   -b , --backend        The backend language of the website [php,jsp,asp]
   -e , --extensions     Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]
-  -a, --all-tests       Make the full test of insecure file upload on target
   -p , --payload        Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>
   -s , --success-message
                         The success string of the upload script. [Upload was successful! uploads/image.jpg]
   -d , --data           Add custom data to the request [name,key]
   -uv , --upload-variable
                         main page upload php form variable (i.e form-data; name:###
+  -c , --headers        Add custom headers to the request
+  -i , --intervals      Add a delay between requests.
+  -to , --request-time-out
+                        Add a delay between requests.
+  -re, --request-redirects
+                        Request Redirects flag.
+
+Tests:
+  -a, --all-tests       Run all avilable tests
+  -be, --bruteforce-extension
+                        Extension Brute forcing.
+  -bn, --bruteforce-null-extension
+                        Null Extension Brute forcing.
+  -bc, --bruteforce-content-type
                         Content-Type field Brute forcing.
   -bm , --bruteforce-multi-extension
                         Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php)
@@ -49,6 +62,7 @@ options:
   -v, --print           full data of the request
   -vs, --verbal-success
                         Turn off success message [switch]
+
 
 legal disclaimer:
 Usage of UploadBuster for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible fo

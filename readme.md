@@ -13,41 +13,37 @@ UploadBuster Was created by Michael Azoulay to help Security Researchers locate 
 
 ## Usage:
 ```
-usage: python3 uploadbuster.py [-h] -u URL -b BACKEND -e EXTENSIONS [-a] [-p PAYLOAD] [-s SUCCESS_MESSAGE] [-d DATA] [-uv UPLOAD_VARIABLE] [-c HEADERS] [-i INTERVALS] [-to REQUEST_TIME_OUT] [-re] [-be] [-bn] [-bc]
-                    [-de BRUTEFORCE_MULTI_EXTENSION] [-bl] [-db] [-vi] [-vo] [-v] [-vs]
-                    
+   __  __      __                __/___
+  / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
+ / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
+/ /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /
+\____/ .___/_/\____/\__,_/\__,_/_____/\__,_/____/\__/\___/_/
+    /_/
+
+
+usage: UploadBuster [-h] -u  -b  -e  [-a] [-p] [-s] [-d] [-uv] [-c] [-i] [-to] [-re] [-be] [-bn] [-bc] [-bm] [-bl] [-te] [-db] [-vi] [-vo] [-v] [-vs]
+
+UploadBuster Was created by Michael Azoulay to help Security Researchers locate unrestricted file upload vulnerabilities.
+
+options:
   -h, --help            show this help message and exit
-  -u URL, --url URL     Full url to the upload script [http://example.local/upload.php]
-  -b BACKEND, --backend BACKEND
-                        The backend language of the website [php,jsp,asp]
-  -e EXTENSIONS, --extensions EXTENSIONS
-                        Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]
+  -u , --url            Full url to the upload script [http://example.local/upload.php]
+  -b , --backend        The backend language of the website [php,jsp,asp]
+  -e , --extensions     Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]
   -a, --all-tests       Make the full test of insecure file upload on target
-  -p PAYLOAD, --payload PAYLOAD
-                        Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>
-  -s SUCCESS_MESSAGE, --success-message SUCCESS_MESSAGE
+  -p , --payload        Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>
+  -s , --success-message
                         The success string of the upload script. [Upload was successful! uploads/image.jpg]
-  -d DATA, --data DATA  Add custom data to the request [name,key]
-  -uv UPLOAD_VARIABLE, --upload-variable UPLOAD_VARIABLE
+  -d , --data           Add custom data to the request [name,key]
+  -uv , --upload-variable
                         main page upload php form variable (i.e form-data; name:###
-  -c HEADERS, --headers HEADERS
-                        Add custom headers to the request
-  -i INTERVALS, --intervals INTERVALS
-                        Add a delay between requests.
-  -to REQUEST_TIME_OUT, --request-time-out REQUEST_TIME_OUT
-                        Add a delay between requests.
-  -re, --request-redirects
-                        Request Redirects flag.
-  -be, --bruteforce-extension
-                        Extension Brute forcing.
-  -bn, --bruteforce-null-extension
-                        Null Extension Brute forcing.
-  -bc, --bruteforce-content-type
                         Content-Type field Brute forcing.
-  -de BRUTEFORCE_MULTI_EXTENSION, --bruteforce-multi-extension BRUTEFORCE_MULTI_EXTENSION
+  -bm , --bruteforce-multi-extension
                         Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php)
   -bl, --bruteforce-filename-limit
                         Content-Type field Brute forcing.
+  -te, --tech-execution-extension
+                        Try to edit .htaccess so it would treat extension as a php file extension.
   -db, --dont-brute     if success message is found stop all tests.
   -vi, --print-i        print the Request
   -vo, --print-o        print the Response
@@ -58,6 +54,7 @@ usage: python3 uploadbuster.py [-h] -u URL -b BACKEND -e EXTENSIONS [-a] [-p PAY
 legal disclaimer:
 Usage of UploadBuster for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible fo
 r any misuse or damage caused by this program.
+
 ```
 
 ## Example:

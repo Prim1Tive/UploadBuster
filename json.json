@@ -16,7 +16,7 @@
     "jpg": ["\\xff\\xd8\\xff","\\x00\\x00\\x00\\x0C","\\xFF\\x4F\\xFF\\x51"],
     "gif": ["\\x47\\x49\\x46\\x38","GIF89a"],
     "png": ["89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A"],
-    "zip": ["\\x50\\x4B"],
+    "zip": ["\\x50\\x4B"]
   },
   "content_types": [
     "image/jpeg",

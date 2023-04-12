@@ -13,7 +13,7 @@ UploadBuster Was created by Michael Azoulay to help Security Researchers locate 
 
 ## Usage:
 ```
-   __  __      __                __/___
+   __  __      __                _____
   / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
  / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
 / /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /

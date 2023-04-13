@@ -89,3 +89,14 @@ r any misuse or damage caused by this program.
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
         > SUCCESS LINE: <p class="alert-success">the file has been uploaded here: <a href="uploads/fd09b.phtml">uploads/fd09b.phtml</a>.</p>    <script type="text/javascript" src="../static/css/bootstrap.min.js"></script>
 ```
+
+## To do list:
+```
+• Add Custom payload filename
+• Add Exif Techs
+• Add ASP techs
+• Add Magic bytes tech
+• check for checksum
+• check for restricted charecters
+• Add auto form detection
+```

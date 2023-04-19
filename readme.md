@@ -1,6 +1,7 @@
 # UploadBuster - Bust upload file restrictions.
 
 UploadBuster Was created to help Security Researchers locate unrestricted file upload vulnerabilities. Prim1Tive™
+*This is a work in progrss, expect for FP
 
 ## Requierments:
 
@@ -13,9 +14,9 @@ UploadBuster Was created to help Security Researchers locate unrestricted file u
 ## Usage:
 ```
    __  __      __                ______             __
-  / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
- / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
-/ /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /
+  / / / /___  / /___  ____ _____/ / __-)__  _______/ /____  _____
+ / / / / __ \/ / __ \/ __ `/ __  / /_/-/ / / / ___/ __/ _ \/ ___/
+/ /_/ / /_/ / / /_/ / /_/ / /_/ / /_/-/ /_/ (__  ) /_/  __/ /
 \____/ .___/_/\____/\__,_/\__,_/_____/\__,_/____/\__/\___/_/
     /_/
 

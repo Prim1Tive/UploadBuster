@@ -29,8 +29,6 @@ def args_handler():
     parser.add_argument("-e", "--extensions",
                         help="Allowed extensions for the upload form [jpeg,docx,png,pdf, please put only one.]", metavar='',
                         required=True)
-    parser.add_argument("-a", "--all-tests", help="Make the full test of insecure file upload on target",
-                        action='store_true')
     parser.add_argument("-p", "--payload", default="PAYLOAD.php", metavar='',
                         help="Payload to sent, default: the preferred language hello script if not provided the script will be <?php echo HelloWorld;?>")
     parser.add_argument("-s", "--success-message", default="success", metavar='',
@@ -39,17 +37,19 @@ def args_handler():
     parser.add_argument("-uv", "--upload-variable", default="file", metavar='',
                         help='main page upload php form variable (i.e form-data; name:###')
     parser.add_argument("-c", "--headers", metavar='', help='Add custom headers to the request')
-    parser.add_argument("-i", "--intervals", default=0, type=int, metavar='', help='Add a delay between requests.')
+    parser.add_argument("-i", "--intervals", default=0.0, type=float, metavar='', help='Add a delay between requests.')
     parser.add_argument("-to", "--request-time-out", default=3, type=int, metavar='', help='Add a delay between requests.')
     parser.add_argument("-re", "--request-redirects", action='store_true', help='Request Redirects flag.')
 
     # modes
+    parser.add_argument("-a", "--all-tests", help="Make the full test of Unrestricted File Upload on target",
+                        action='store_true')
     parser.add_argument("-be", "--bruteforce-extension", help='Extension Brute forcing.', action='store_true')
-    parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.' , action='store_true')
+    parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
     parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ',
                         action='store_true')
     parser.add_argument("-bm", "--bruteforce-multi-extension", default=0, type=int, metavar='',
-                        help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-de [3] = jpg.php.php.php) ', )
+                        help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-bm [3] = jpg.php.php.php) ', )
     parser.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ',
                         action='store_true')
     parser.add_argument("-te", "--tech-execution-extension",
@@ -179,6 +179,7 @@ class UploadBuster:
         for _index in range(999):
             self._change_payload_file_name(self.args.payload + (_index * "A"))
             self._send_formated_request_print()
+
     def _bruter_content_type(self):
         print(f"[+] Executing Bruteforce Content-type header")
         for self.payload_content_type in self._configuration['content_types']:
@@ -288,7 +289,7 @@ class UploadBuster:
         elif self.args.all_tests:
             print("[+] Executing All tests ")
             self._tech_add_execution_extension()
-            self._tech_short_php_payload()
+            # self._tech_short_php_payload()
             self._bruter_file_ext()
             self._bruter_null_file_ext()
             self._bruter_multi_ext()

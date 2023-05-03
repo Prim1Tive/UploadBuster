@@ -4,6 +4,9 @@
     "condis": "Content-Disposition: form-data; filename={payload_file_name}",
     "print-request-success": "f'Status Code: {self.request.status_code}'"
   },
+  "regex": {
+    "urls": ["/((([A-Za-z]{3,9}:(?://)?)(?:[-;:&=+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:/[+~%/.\\w-]*)?\\??(?:[-+=&;%@.\\w])#?(?:[\\w]))?)/\n\n" ]
+  },
   "exts": {
   "php":[".phtml", ".php", ".php3", ".php4", ".php5", ".inc"],
   "asp": ["asp", ".aspx"],

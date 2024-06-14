@@ -1,4 +1,4 @@
-# UploadBuster - Bust upload file restrictions.
+# UploadBuster - Bust file upload restrictions.
 
 UploadBuster Was created to help Security Researchers locate unrestricted file upload vulnerabilities. Prim1Tive™
 *This is a work in progrss, expect for FP

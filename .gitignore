@@ -7,3 +7,6 @@
 .idea/inspectionProfiles/Project_Default.xml
 .idea/inspectionProfiles/profiles_settings.xml
 checklist.txt
+__pycache__/
+.pytest_cache/
+*.pyc
